@@ -87,7 +87,7 @@ public class Statemachine<S extends Enum<S>, E extends Enum<E>, C extends StateC
     private HashMap<Node, Set<Edge>> mGraph;
 
 
-    public static class Builder<S extends Enum<S>, E extends Enum<E>, C extends StateContext> {
+    public static class Builder<S1 extends Enum<S1>, E1 extends Enum<E1>, C1 extends StateContext> {
 
         private HashMap<Node, Set<Edge>> mGraph = new HashMap<>();
 
@@ -95,10 +95,10 @@ public class Statemachine<S extends Enum<S>, E extends Enum<E>, C extends StateC
 
         }
 
-        public Builder configure(S from, S to, E event) {
-            Node<S> fromNode = new Node<>(from);
-            Node<S> toNode = new Node<>(to);
-            Edge<S, E> edge = new Edge<>(toNode, event);
+        public Builder<S1, E1, C1> configure(S1 from, S1 to, E1 event) {
+            Node<S1> fromNode = new Node<>(from);
+            Node<S1> toNode = new Node<>(to);
+            Edge<S1, E1> edge = new Edge<>(toNode, event);
             Set<Edge> edges = mGraph.get(fromNode);
             if(edges == null) {
                 edges = new HashSet<>();
@@ -112,8 +112,8 @@ public class Statemachine<S extends Enum<S>, E extends Enum<E>, C extends StateC
             return this;
         }
 
-        public Statemachine<S, E, C> build() {
-            Statemachine<S, E, C> retval = new Statemachine<>();
+        public Statemachine<S1, E1, C1> build() {
+            Statemachine<S1, E1, C1> retval = new Statemachine<>();
             retval.mGraph = mGraph;
             return retval;
         }

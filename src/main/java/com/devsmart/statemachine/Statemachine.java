@@ -85,14 +85,17 @@ public class Statemachine<S extends Enum<S>, E extends Enum<E>, C extends StateC
 
     private C mContext;
     private HashMap<Node, Set<Edge>> mGraph;
+    private S mStartState;
+    private S mState;
 
 
     public static class Builder<S1 extends Enum<S1>, E1 extends Enum<E1>, C1 extends StateContext> {
 
+        private final S1 mStartState;
         private HashMap<Node, Set<Edge>> mGraph = new HashMap<>();
 
-        public Builder() {
-
+        public Builder(S1 startState) {
+            mStartState = startState;
         }
 
         public Builder<S1, E1, C1> configure(S1 from, S1 to, E1 event) {
@@ -114,6 +117,8 @@ public class Statemachine<S extends Enum<S>, E extends Enum<E>, C extends StateC
 
         public Statemachine<S1, E1, C1> build() {
             Statemachine<S1, E1, C1> retval = new Statemachine<>();
+            retval.mStartState = mStartState;
+            retval.mState = mStartState;
             retval.mGraph = mGraph;
             return retval;
         }
@@ -121,6 +126,18 @@ public class Statemachine<S extends Enum<S>, E extends Enum<E>, C extends StateC
     }
 
     private Statemachine() {
+    }
+
+
+    public S getState() {
+        return mState;
+    }
+
+    public <C1 extends C> void input(E event, C1 context) {
+        Set<Edge> edges = mGraph.get(event);
+        if(edges != null) {
+            
+        }
 
     }
 }

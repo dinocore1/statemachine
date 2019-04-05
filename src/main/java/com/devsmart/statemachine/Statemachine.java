@@ -1,6 +1,8 @@
 package com.devsmart.statemachine;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Statemachine<S extends Enum<S>, E extends Enum<E>, C extends StateContext> {
 
@@ -49,6 +51,7 @@ public class Statemachine<S extends Enum<S>, E extends Enum<E>, C extends StateC
     private HashMap<Edge<S, E>, S> mGraph;
     private S mStartState;
     private S mState;
+    private Set<EventListener<S, E, C>> mListeners = new HashSet<>();
 
 
     public static class Builder<S extends Enum<S>, E extends Enum<E>, C1 extends StateContext> {
@@ -101,11 +104,22 @@ public class Statemachine<S extends Enum<S>, E extends Enum<E>, C extends StateC
         }
     }
 
+    public void addListener(EventListener<S, E, C> listener) {
+        mListeners.add(listener);
+    }
+
+    public void removeListener(EventListener<S, E, C> listener) {
+        mListeners.remove(listener);
+    }
+
     public void input(E event) {
         input(event, null);
     }
 
     private <C1 extends C> void dispatch(C1 context, S oldState, S nextState, E event) {
+        for(EventListener<S, E, C> l : mListeners) {
+            l.onStateChange(context, oldState, nextState, event);
+        }
 
     }
 }

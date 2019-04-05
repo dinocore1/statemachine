@@ -1,9 +1,21 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
+    }
+}
+
 plugins {
     id 'java'
 }
 
-group 'com.devsmart'
+apply plugin: 'com.bmuschko.nexus'
+
+group 'com.dev-smart'
 version '1.0-SNAPSHOT'
+description 'Simple Finite State Machine implementation'
 
 sourceCompatibility = 1.8
 
@@ -14,4 +26,32 @@ repositories {
 dependencies {
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:2.26.0'
+}
+
+modifyPom {
+    project {
+        name 'statemachine'
+        url 'https://github.com/dinocore1/statemachine'
+
+        scm {
+            url 'scm:git@github.com:dinocore1/statemachine.git'
+            connection 'scm:git@github.com:dinocore1/statemachine.git'
+            developerConnection 'scm:git@github.com:dinocore1/statemachine.git'
+        }
+
+        licenses {
+            license {
+                name 'MIT License'
+                url 'https://github.com/dinocore1/statemachine/blob/master/LICENSE.txt'
+                distribution 'repo'
+            }
+        }
+
+        developers {
+            developer {
+                id 'psoucy'
+                name 'Paul Soucy'
+            }
+        }
+    }
 }

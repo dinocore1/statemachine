@@ -2,6 +2,8 @@ package com.devsmart.statemachine;
 
 import org.junit.Test;
 
+import static org.junit.Assert.*;
+
 public class StatemachineTest {
 
 
@@ -23,6 +25,15 @@ public class StatemachineTest {
                 .configure(State.Unlocked, State.Locked, Event.Push)
                 .configure(State.Unlocked, State.Unlocked, Event.Coin)
                 .build();
+
+        assertEquals(State.Locked, sm.getState());
+        sm.input(Event.Push);
+        assertEquals(State.Locked, sm.getState());
+        sm.input(Event.Coin);
+        assertEquals(State.Unlocked, sm.getState());
+        sm.input(Event.Push);
+        assertEquals(State.Locked, sm.getState());
+
     }
 
     @Test(expected = IllegalStateException.class)

@@ -3,6 +3,7 @@ package com.devsmart.statemachine;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 public class StatemachineTest {
 
@@ -19,7 +20,7 @@ public class StatemachineTest {
 
     @Test
     public void testBuildSimple() {
-        Statemachine<State, Event, StateContext> sm = new Statemachine.Builder<State, Event, StateContext>(State.Locked)
+        Statemachine<State, Event> sm = new Statemachine.Builder<State, Event>(State.Locked)
                 .configure(State.Locked, State.Unlocked, Event.Coin)
                 .configure(State.Locked, State.Locked, Event.Push)
                 .configure(State.Unlocked, State.Locked, Event.Push)
@@ -39,11 +40,29 @@ public class StatemachineTest {
     @Test(expected = IllegalStateException.class)
     public void testBuildAlreadyContainsEdge() {
 
-        Statemachine<State, Event, StateContext> sm = new Statemachine.Builder<State, Event, StateContext>(State.Locked)
+        Statemachine<State, Event> sm = new Statemachine.Builder<State, Event>(State.Locked)
                 .configure(State.Locked, State.Unlocked, Event.Coin)
                 .configure(State.Locked, State.Unlocked, Event.Coin)
                 .build();
 
+
+    }
+
+    @Test
+    public void testListener() {
+        Statemachine<State, Event> sm = new Statemachine.Builder<State, Event>(State.Locked)
+                .configure(State.Locked, State.Unlocked, Event.Coin)
+                .configure(State.Locked, State.Locked, Event.Push)
+                .configure(State.Unlocked, State.Locked, Event.Push)
+                .configure(State.Unlocked, State.Unlocked, Event.Coin)
+                .build();
+
+        Statemachine.EventListener callback = mock(Statemachine.EventListener.class);
+        sm.addListener(callback);
+
+        sm.input(Event.Coin);
+
+        verify(callback, times(1)).onStateChange(sm, State.Locked, State.Unlocked, Event.Coin, null);
 
     }
 }

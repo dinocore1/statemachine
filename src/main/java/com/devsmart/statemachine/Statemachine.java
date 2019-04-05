@@ -4,8 +4,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Statemachine<S extends Enum<S>, E extends Enum<E>, C extends StateContext> {
+public class Statemachine<S extends Enum<S>, E extends Enum<E>> {
 
+    public interface EventListener<S extends Enum<S>, E extends Enum<E>> {
+        void onStateChange(Statemachine<S, E> fsm, S exit, S enter, E event, Object data);
+    }
 
     private static class Edge<S extends Enum<S>, E extends Enum<E>> implements Comparable<Edge<S, E>> {
 
@@ -47,14 +50,13 @@ public class Statemachine<S extends Enum<S>, E extends Enum<E>, C extends StateC
         }
     }
 
-    private C mContext;
     private HashMap<Edge<S, E>, S> mGraph;
     private S mStartState;
     private S mState;
-    private Set<EventListener<S, E, C>> mListeners = new HashSet<>();
+    private Set<EventListener<S, E>> mListeners = new HashSet<>();
 
 
-    public static class Builder<S extends Enum<S>, E extends Enum<E>, C1 extends StateContext> {
+    public static class Builder<S extends Enum<S>, E extends Enum<E>> {
 
         private final S mStartState;
         private HashMap<Edge<S, E>, S> mGraph = new HashMap<>();
@@ -63,7 +65,7 @@ public class Statemachine<S extends Enum<S>, E extends Enum<E>, C extends StateC
             mStartState = startState;
         }
 
-        public Builder<S, E, C1> configure(S from, S to, E event) {
+        public Builder<S, E> configure(S from, S to, E event) {
             Edge<S, E> edge = new Edge<>(from, event);
             S end = mGraph.get(edge);
             if(end != null) {
@@ -76,8 +78,8 @@ public class Statemachine<S extends Enum<S>, E extends Enum<E>, C extends StateC
             return this;
         }
 
-        public Statemachine<S, E, C1> build() {
-            Statemachine<S, E, C1> retval = new Statemachine<>();
+        public Statemachine<S, E> build() {
+            Statemachine<S, E> retval = new Statemachine<>();
             retval.mStartState = mStartState;
             retval.mState = mStartState;
             retval.mGraph = mGraph;
@@ -94,32 +96,31 @@ public class Statemachine<S extends Enum<S>, E extends Enum<E>, C extends StateC
         return mState;
     }
 
-    public <C1 extends C> void input(E event, C1 context) {
+    public void input(E event, Object obj) {
         Edge<S, E> e = new Edge<>(mState, event);
         S nextState = mGraph.get(e);
         if(nextState != null) {
             S oldState = mState;
             mState = nextState;
-            dispatch(context, oldState, nextState, event);
+            dispatch(oldState, nextState, event, obj);
         }
-    }
-
-    public void addListener(EventListener<S, E, C> listener) {
-        mListeners.add(listener);
-    }
-
-    public void removeListener(EventListener<S, E, C> listener) {
-        mListeners.remove(listener);
     }
 
     public void input(E event) {
         input(event, null);
     }
 
-    private <C1 extends C> void dispatch(C1 context, S oldState, S nextState, E event) {
-        for(EventListener<S, E, C> l : mListeners) {
-            l.onStateChange(context, oldState, nextState, event);
-        }
+    public void addListener(EventListener<S, E> listener) {
+        mListeners.add(listener);
+    }
 
+    public void removeListener(EventListener<S, E> listener) {
+        mListeners.remove(listener);
+    }
+
+    private void dispatch(S oldState, S nextState, E event, Object data) {
+        for(EventListener<S, E> l : mListeners) {
+            l.onStateChange(this, oldState, nextState, event, data);
+        }
     }
 }

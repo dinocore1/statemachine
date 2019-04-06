@@ -14,7 +14,7 @@ plugins {
 apply plugin: 'com.bmuschko.nexus'
 
 group 'com.dev-smart'
-version '1.0'
+version '1.0.1-SNAPSHOT'
 description 'Simple Finite State Machine implementation'
 
 sourceCompatibility = 1.8

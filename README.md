@@ -1,5 +1,7 @@
 [![Build Status](https://travis-ci.com/dinocore1/statemachine.svg?branch=master)](https://travis-ci.com/dinocore1/statemachine)
 
+[![](https://img.shields.io/maven-central/v/com.dev-smart/statemachine.svg)](https://search.maven.org/artifact/com.dev-smart/statemachine/)
+
 ### Statemachine for Java
 
 A simple FSM library for Java
